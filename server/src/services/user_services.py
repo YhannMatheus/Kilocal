@@ -1,7 +1,5 @@
 from src.services.body_assessment_service import BodyAssessmentService
-from src.types.schemas.body_assessment import BodyAssessmentBase
 from src.types.schemas.auth import LoginRequest, RegisterRequest
-from src.types.models.body_assessments import BodyAssessment
 from src.types.schemas.workout import WorkoutRead
 from src.types.schemas.user import *
 from src.types.models.workout import Workout
@@ -9,6 +7,7 @@ from src.core.auth.security import Authenticate
 from src.core.auth.token import AccessToken
 from fastapi import HTTPException, status
 from src.types.models.user import User
+from src.core.validator.validator import Validator
 import asyncio
 
 class UserService:
@@ -18,12 +17,16 @@ class UserService:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST, detail="Email already in use"
             )
+        if not Validator.is_valid_email(data.email) or not Validator.is_strong_password(data.password):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST, detail="Invalid email or weak password"
+            )
 
         hashed_password = Authenticate.hash_password(data.password)
 
         user = await User.create(
             name=data.name,
-            email=data.email,
+            email=(data.email).lower(),
             hashed_password=hashed_password,
             gender=data.gender,
             birth_date=data.birth_date,
@@ -34,8 +37,8 @@ class UserService:
         return AccessToken.generate(str(user.id), user.role.value, remember=True)
 
     @staticmethod
-    async def get_user(data: LoginRequest, remember: bool) -> str:
-        user = await User.get_or_none(email=data.email)
+    async def get_user(data: LoginRequest) -> str:
+        user = await User.get_or_none(email=(data.email).lower())
         
         invalid_auth_exception = HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -46,7 +49,7 @@ class UserService:
         if not user or not Authenticate.verify_password(data.password, user.hashed_password):
             raise invalid_auth_exception
 
-        return AccessToken.generate(str(user.id), user.role.value, remember)
+        return AccessToken.generate(str(user.id), user.role.value, data.remember)
 
     @staticmethod
     async def get_by_id(user_id: str) -> User:

@@ -18,6 +18,7 @@ class TokenData(BaseModel):
 class LoginRequest(BaseModel):
     email: EmailStr
     password: str
+    remember: bool = Field(default=False)
 
 
 class RegisterRequest(BaseModel):

@@ -214,16 +214,16 @@ class BodyAssessmentService:
             )
         
     @staticmethod
-    async def bmi_for_date(user_id: str) -> list[BMIGraphPoint]:
+    async def bmi_for_date(user_id: str) -> list[GraphPoint]:
         """
         Retorna lista de pontos (data, IMC) para todas as avaliações de um usuário.
         """
         try:
             assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
             return [
-                BMIGraphPoint(
+                GraphPoint(
                     date=assessment.created_at,
-                    bmi=assessment.bmi
+                    value=assessment.bmi
                 )
                 for assessment in assessments
                 if assessment.bmi is not None
@@ -236,16 +236,16 @@ class BodyAssessmentService:
             )
     
     @staticmethod
-    async def bfp_for_date(user_id: str) -> list[BFPGraphPoint]:
+    async def bfp_for_date(user_id: str) -> list[GraphPoint]:
         """
         Retorna lista de tuplas (data, % Gordura) para todas as avaliações de um usuário.
         """
         try:
             assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
             return [
-                BFPGraphPoint(
+                GraphPoint(
                     date=assessment.created_at,
-                    bfp=assessment.bfp
+                    value=assessment.bfp
                 )
                 for assessment in assessments
                 if assessment.bfp is not None
@@ -258,16 +258,16 @@ class BodyAssessmentService:
             )
     
     @staticmethod
-    async def tdee_for_date(user_id: str) -> list[TDEEGraphPoint]:
+    async def tdee_for_date(user_id: str) -> list[GraphPoint]:
         """
         Retorna lista de tuplas (data, TDEE) para todas as avaliações de um usuário.
         """
         try:
             assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
             return [
-                TDEEGraphPoint(
+                GraphPoint(
                     date=assessment.created_at,
-                    tdee=assessment.tdee
+                    value=assessment.tdee
                 )
                 for assessment in assessments
                 if assessment.tdee is not None
@@ -280,41 +280,16 @@ class BodyAssessmentService:
             )
     
     @staticmethod
-    async def lean_mass_fat_mass_for_date(
-        user_id: str
-    ) -> list[LFMassGraphPoint]:
-        """
-        Retorna lista de tuplas (data, Massa Magra, Massa Gorda) para todas as avaliações de um usuário.
-        """
-        try:
-            assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
-            return [
-                LFMassGraphPoint(
-                    date=assessment.created_at,
-                    lean_mass_kg=assessment.lean_mass_kg,
-                    fat_mass_kg=assessment.fat_mass_kg
-                )
-                for assessment in assessments
-                if assessment.lean_mass_kg is not None and assessment.fat_mass_kg is not None
-            ]
-        except Exception as e:
-            print(f"❌ Erro ao recuperar dados de Massa Magra/Gorda: {str(e)}")
-            raise HTTPException(
-                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-                detail="Erro ao recuperar dados de Massa Magra/Gorda. Tente novamente."
-            )
-    
-    @staticmethod
-    async def weight_for_date(user_id: str) -> list[WeigthGraphPoint]:
+    async def weight_for_date(user_id: str) -> list[GraphPoint]:
         """
         Retorna lista de pontos (data, peso) para todas as avaliações de um usuário.
         """
         try:
             assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
             return [
-                WeigthGraphPoint(
+                GraphPoint(
                     date=assessment.created_at,
-                    weight_kg=assessment.weight_kg
+                    value=assessment.weight_kg
                 )
                 for assessment in assessments
                 if assessment.weight_kg is not None
@@ -325,26 +300,94 @@ class BodyAssessmentService:
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Erro ao recuperar dados de peso. Tente novamente."
             )
+    
+    @staticmethod
+    async def get_lean_mass_for_date(user_id: str) -> list[GraphPoint]:
+        """
+        Retorna lista de pontos (data, massa magra) para todas as avaliações de um usuário.
+        """
+        try:
+            assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
+            return [
+                GraphPoint(
+                    date=assessment.created_at,
+                    value=assessment.lean_mass_kg
+                )
+                for assessment in assessments
+                if assessment.lean_mass_kg is not None
+            ]
+        except Exception as e:
+            print(f"❌ Erro ao recuperar dados de massa magra: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro ao recuperar dados de massa magra. Tente novamente."
+            )
+
+    @staticmethod
+    async def get_fat_mass_for_date(user_id: str) -> list[GraphPoint]:
+        """
+        Retorna lista de pontos (data, massa gorda) para todas as avaliações de um usuário.
+        """
+        try:
+            assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
+            return [
+                GraphPoint(
+                    date=assessment.created_at,
+                    value=assessment.fat_mass_kg
+                )
+                for assessment in assessments
+                if assessment.fat_mass_kg is not None
+            ]
+        except Exception as e:
+            print(f"❌ Erro ao recuperar dados de massa gorda: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro ao recuperar dados de massa gorda. Tente novamente."
+            )
         
+    @staticmethod
+    async def get_brm_for_date(user_id: str) -> list[GraphPoint]:
+        """
+        Retorna lista de pontos (data, BMR) para todas as avaliações de um usuário.
+        """
+        try:
+            assessments = await BodyAssessment.filter(user_id=user_id).order_by('created_at')
+            return [
+                GraphPoint(
+                    date=assessment.created_at,
+                    value=assessment.bmr
+                )
+                for assessment in assessments
+                if assessment.bmr is not None
+            ]
+        except Exception as e:
+            print(f"❌ Erro ao recuperar dados de BMR: {str(e)}")
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Erro ao recuperar dados de BMR. Tente novamente."
+            )
+
     @staticmethod
     async def get_body_assessment_graphs(
         user_id: str
     ) -> BodyAssessmentGraphs:
         try:
-            bfp_graph, bmi_graph, tdee_graph, lf_mass_graph, weight_graph = await asyncio.gather(
+            bfp_graph, bmi_graph, tdee_graph, weight_graph,lm_graph, fm_graph = await asyncio.gather(
                 BodyAssessmentService.bfp_for_date(user_id),
                 BodyAssessmentService.bmi_for_date(user_id),
                 BodyAssessmentService.tdee_for_date(user_id),
-                BodyAssessmentService.lean_mass_fat_mass_for_date(user_id),
-                BodyAssessmentService.weight_for_date(user_id)
+                BodyAssessmentService.weight_for_date(user_id),
+                BodyAssessmentService.get_lean_mass_for_date(user_id),
+                BodyAssessmentService.get_fat_mass_for_date(user_id)
             )
             
             return BodyAssessmentGraphs(
                 bfp_graph=bfp_graph,
                 bmi_graph=bmi_graph,
                 tdee_graph=tdee_graph,
-                lf_mass_graph=lf_mass_graph,
-                weight_graph=weight_graph
+                weight_graph=weight_graph,
+                lean_mass_graph=lm_graph,
+                fat_mass_graph=fm_graph
             )
         except HTTPException as e:
             raise HTTPException(

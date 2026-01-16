@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Request
+from fastapi import APIRouter, Depends, HTTPException, status, Header
 from src.services.user_services import UserService
 from src.types.schemas.auth import *
 from src.types.schemas.user import *
@@ -9,13 +9,13 @@ from src.types.models.user import User
 router = APIRouter(prefix="/user", tags=["User"])
 
 @router.post("/login", response_model=Token)
-async def login(data: LoginRequest, remember: bool = False) -> Token:
+async def login(data: LoginRequest) -> Token:
     try:
-        access_token = await UserService.get_user(data, remember)
+        access_token = await UserService.get_user(data)
                 
         token_data = AccessToken.decode(access_token)
         
-        session = await SessionService.create_session(user_id=str(token_data.user_id), remember=remember)
+        session = await SessionService.create_session(user_id=str(token_data.user_id), remember=data.remember)
         
         if not session:
             raise HTTPException(
@@ -62,12 +62,11 @@ async def register(data: RegisterRequest) -> Token:
         )
 
 @router.get("/profile", response_model=UserProfile)
-async def profile(request: Request) -> UserProfile:
+async def profile(authorization:str = Header(...)) -> UserProfile:
+    token = AccessToken.decode(authorization)
     try:
-        user: User = request.state.user
-        
-        profile = await UserService.get_user_profile(str(user.id))
-        
+        user_id = token.user_id
+        profile = await UserService.get_user_profile(str(user_id))
         return profile
         
     except HTTPException as e:

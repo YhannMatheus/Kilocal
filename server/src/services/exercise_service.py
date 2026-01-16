@@ -1,14 +1,14 @@
 from src.types.models.exercise import Exercisse
-from src.types.schemas.exercise import ExerciseCreate, ExerciseUpdate, ExerciseRead
+from src.types.schemas.exercise import *
 from fastapi import HTTPException, status
 from uuid import UUID
 
 class ExerciseService:
     @staticmethod
-    async def create(workout_id: UUID, user_id: UUID, user_weight_kg: float, data: ExerciseCreate) -> Exercisse:
+    async def create(data: ExerciseCreate) -> Exercisse:
         try:
             exercise = await Exercisse.create(
-                workout_id=workout_id,
+                workout_id=data.workout_id,
                 name=data.name,
                 type=data.type,
                 intensity=data.intensity

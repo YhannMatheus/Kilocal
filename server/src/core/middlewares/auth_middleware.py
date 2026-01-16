@@ -11,8 +11,9 @@ logger = logging.getLogger(__name__)
 class AuthMiddleware(BaseHTTPMiddleware):
 
     PUBLIC_PATHS = [
+        "/",
         "/docs",
-        "/redocs"
+        "/redoc",
         "/openapi.json",
         "/api/v1/user/login",
         "/api/v1/user/register",

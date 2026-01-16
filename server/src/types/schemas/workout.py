@@ -6,25 +6,20 @@ from src.types.enums.workout import TrainingTypeEnum
 from src.types.schemas.exercise import ExerciseRead, ExerciseMinimal
 
 class WorkoutCreate(BaseModel):
+    userid : UUID
     name: str = Field(..., min_length=1, max_length=255)
     type: TrainingTypeEnum
     start_time: datetime
 
 class WorkoutRead(BaseModel):
-    id: UUID
-    user_id: UUID
     name: str
     type: TrainingTypeEnum
     start_time: datetime
-    end_time: Optional[datetime] = None
     total_calories_burned: float = 0.0
     duration_minutes: Optional[float] = None
     exercises: List[ExerciseMinimal] = []
-    create_at: datetime
-
     class Config:
         from_attributes = True
-
 class WorkoutDetailed(BaseModel):
     id: UUID
     user_id: UUID
@@ -39,7 +34,7 @@ class WorkoutDetailed(BaseModel):
 
     class Config:
         from_attributes = True
-
+        
 class WorkoutCaloriesGraphPoint(BaseModel):
     date: datetime
     total_calories: float
@@ -64,8 +59,3 @@ class WorkoutUpdate(BaseModel):
     name: Optional[str] = Field(None, min_length=1, max_length=255)
     type: Optional[TrainingTypeEnum] = None
     end_time: Optional[datetime] = None
-
-class WorkoutComplete(BaseModel):
-    end_time: datetime
-
-

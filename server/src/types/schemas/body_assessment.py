@@ -2,7 +2,7 @@ from pydantic import BaseModel, Field
 from datetime import datetime
 from uuid import UUID
 from typing import Optional
-from src.types.schemas.user import UserRead
+from enum import Enum
 
 class BodyAssessmentBase(BaseModel):
     id : UUID
@@ -60,34 +60,22 @@ class BodyAssessmentCreate(BaseModel):
     fold_suprailiac: Optional[float] = Field(None, ge=0)
     fold_midaxillary: Optional[float] = Field(None, ge=0)
 
-class WeigthGraphPoint(BaseModel):
+class GraphPoint(BaseModel):
     date: datetime
-    weight_kg: float
-
-class BFPGraphPoint(BaseModel):
-    date: datetime
-    bfp: float
-
-class BMIGraphPoint(BaseModel):
-    date: datetime
-    bmi: float
-
-class BMRGraphPoint(BaseModel):
-    date: datetime
-    bmr: float
-
-class TDEEGraphPoint(BaseModel):
-    date: datetime
-    tdee: float
-
-class LFMassGraphPoint(BaseModel):
-    date: datetime
-    lean_mass_kg: float
-    fat_mass_kg: float
+    value:  float
 
 class BodyAssessmentGraphs(BaseModel):
-    bfp_graph: list[BFPGraphPoint]
-    bmi_graph: list[BMIGraphPoint]
-    tdee_graph: list[TDEEGraphPoint]
-    lf_mass_graph: list[LFMassGraphPoint]
-    weight_graph: list[WeigthGraphPoint]
+    bfp_graph: list[GraphPoint]
+    bmi_graph: list[GraphPoint]
+    tdee_graph: list[GraphPoint]
+    lean_mass_graph: list[GraphPoint]
+    fat_mass_graph: list[GraphPoint]
+    weight_graph: list[GraphPoint]
+
+class BioStatusType(str, Enum):
+    WEIGTH = "weight"
+    BFP = "bfp"
+    BMI = "bmi"
+    BMR = "bmr"
+    TDEE = "tdee"
+    LEAN_FAT_MASS = "lean_fat_mass"

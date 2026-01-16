@@ -1,6 +1,10 @@
 from tortoise import fields, Model
-from uuid import uuid4
 from src.types.enums.workout import TrainingTypeEnum
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from tortoise.fields import ReverseRelation
+    from src.types.models.exercise import Exercisse
 
 class Workout(Model):
     id = fields.UUIDField(pk=True)
@@ -13,6 +17,9 @@ class Workout(Model):
     end_time = fields.DatetimeField(null=True)
 
     create_at = fields.DatetimeField(auto_now_add=True)
+
+    if TYPE_CHECKING:
+        exercises: ReverseRelation["Exercisse"]
 
     class Meta:
         table = "workouts"
