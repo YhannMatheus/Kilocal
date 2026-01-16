@@ -3,17 +3,14 @@ from urllib.parse import urlparse, parse_qs, urlunparse
 import ssl
 
 def get_tortoise_url(url: str):
-    # 1. Corrige o protocolo para 'postgres'
     url = url.replace("postgresql://", "postgres://")
     
-    # 2. Remove parâmetros que o asyncpg não entende (como sslmode)
     parsed = urlparse(url)
-    # Retornamos a URL sem a parte da query (?sslmode=...)
+    
     return urlunparse(parsed._replace(query=""))
 
 database_url = get_tortoise_url(settings.DATABASE_URL)
 
-# Configuração SSL para Neon
 ssl_context = ssl.create_default_context()
 ssl_context.check_hostname = False
 ssl_context.verify_mode = ssl.CERT_NONE
