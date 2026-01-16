@@ -16,6 +16,7 @@ export const globalStyles = StyleSheet.create({
     justifyContent: 'center',
     marginBottom: theme.spacing.small,
   },
+
   logoTextWhite: {
     fontSize: 40, // Letra bem grande
     fontWeight: '900', // Extra bold
@@ -28,6 +29,13 @@ export const globalStyles = StyleSheet.create({
   },
   
   // Subtítulo ("Sua performance...")
+  title:{
+    fontSize: theme.fontSizes.large,
+    color: theme.colors.text,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+
   subtitle: {
     fontSize: theme.fontSizes.medium,
     color: theme.colors.textLight,
@@ -85,5 +93,25 @@ export const globalStyles = StyleSheet.create({
     marginTop: theme.spacing.large,
     fontSize: theme.fontSizes.medium,
     textDecorationLine: 'underline',
+  },
+  
+  //Check box styles
+  checkBoxContainer:{
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: theme.spacing.medium,
+    marginTop: theme.spacing.medium,
+  },
+
+  checkbox :{
+    marginRight: theme.spacing.small,
+    borderRadius: 4,
+    borderColor: theme.colors.textLight
+  },
+
+  checkBoxLabel:{
+    color: theme.colors.text,
+    fontSize: theme.fontSizes.medium,
   }
+
 });

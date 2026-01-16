@@ -7,6 +7,7 @@ interface AuthContextData{
     user: User | null;
     isLoading: boolean;
     signIn: (email: string, pass: string, remember: boolean) => Promise<void>;
+    signInWithToken: (token: string) => Promise<void>;
     signOut: () => void;
 }
 
@@ -28,7 +29,7 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
                 try{
-                    const response = await api.get<User>('/users/me');
+                    const response = await api.get<User>('/users/profile');
                     setUser(response.data);
                 }catch(error){
                     await signOut();
@@ -40,18 +41,33 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
             setIsLoading(false);
         }
     }
+    
+    async function signInWithToken(token: string){
+        try{
+            await AsyncStorage.setItem("@Kilocal:token", token);
+            api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
+            const userResponse = await api.get<User>('/users/profile');
+            setUser(userResponse.data);
+        } catch(error){
+            console.log("SignInWithToken ERROR", error);
+            await signOut();
+            throw error;
+        }
+    }
 
     async function signIn(email: string, pass: string, remember: boolean){
         const response = await api.post<AuthResponse>('/user/login', {
             email,
-            password: pass
+            password: pass,
+            remember
         })
 
         const {access_token} = response.data;
+        
         await AsyncStorage.setItem("@Kilocal:token", access_token);
         api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-        const userResponse = await api.get<User>('/users/me');
+        const userResponse = await api.get<User>('/users/profile');
         setUser(userResponse.data);
     }
     async function signOut(){
@@ -60,8 +76,10 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         delete api.defaults.headers.common['Authorization'];
     }
 
+    
+
     return(
-        <AuthContext.Provider value={{user, isLoading, signIn, signOut}}>
+        <AuthContext.Provider value={{user, isLoading, signIn, signInWithToken ,signOut}}>
             {children}
         </AuthContext.Provider>
     )

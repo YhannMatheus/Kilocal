@@ -1,5 +1,4 @@
 from tortoise import Model, fields
-from uuid import uuid4
 from src.types.enums.user import GenderEnum, ActivityLevelEnum, RoleEnum
 
 class User(Model):
@@ -10,11 +9,11 @@ class User(Model):
     birth_date = fields.DateField()
     role = fields.CharEnumField(RoleEnum, default=RoleEnum.USER)
 
-    height_cm = fields.FloatField(default=0.0)
+    height_cm = fields.FloatField(null=True,default=0.0)
     goal = fields.FloatField(null=True)
 
     gender = fields.CharEnumField(GenderEnum)
-    activity_level = fields.CharEnumField(ActivityLevelEnum)
+    activity_level = fields.CharEnumField(ActivityLevelEnum, null=True, default=ActivityLevelEnum.SEDENTARY)
     
     activates_at = fields.DatetimeField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)

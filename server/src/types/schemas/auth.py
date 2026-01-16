@@ -28,4 +28,3 @@ class RegisterRequest(BaseModel):
     birth_date: date
     height_cm: float
     gender: GenderEnum
-    activity_level: ActivityLevelEnum

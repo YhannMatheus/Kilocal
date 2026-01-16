@@ -31,7 +31,6 @@ class UserService:
             gender=data.gender,
             birth_date=data.birth_date,
             height_cm=data.height_cm,
-            activity_level=data.activity_level,
         )
 
         return AccessToken.generate(str(user.id), user.role.value, remember=True)

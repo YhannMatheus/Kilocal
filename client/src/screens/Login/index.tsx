@@ -1,4 +1,5 @@
 import { View, Text, TextInput, ActivityIndicator, TouchableOpacity, StatusBar } from 'react-native';
+import Checkbox from 'expo-checkbox';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { AuthContext } from '@/context/auth.context';
 import React, { useState, useContext } from 'react';
@@ -8,9 +9,10 @@ import { theme } from '@/styles/theme';
 
 type Props = NativeStackScreenProps<RootStackParamList, 'Login'>;
 
-export const LoginScreen = ({ navigation }: Props) => {
+export default function LoginScreen ({ navigation }: Props) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [remember, setRemember] = useState(false);
   const { signIn } = useContext(AuthContext);
   const [loading, setLoading] = useState(false);
 
@@ -19,7 +21,7 @@ export const LoginScreen = ({ navigation }: Props) => {
     
     setLoading(true);
     try {
-      await signIn(email, password);
+      await signIn(email, password, remember);
     } catch (error) {
       alert('Erro ao logar. Verifique credenciais.');
     } finally {
@@ -45,7 +47,7 @@ export const LoginScreen = ({ navigation }: Props) => {
       {/* Label e Input de Email */}
       <Text style={globalStyles.inputLabel}>E-MAIL</Text>
       <TextInput 
-        placeholder="atleta@exemplo.com" 
+        placeholder="seuemail@exemplo.com" 
         placeholderTextColor={theme.colors.textLight} 
         style={globalStyles.input} 
         value={email}
@@ -53,7 +55,7 @@ export const LoginScreen = ({ navigation }: Props) => {
         autoCapitalize="none"
         keyboardType="email-address"
       />
-      
+
       {/* Label e Input de Senha */}
       <Text style={globalStyles.inputLabel}>SENHA</Text>
       <TextInput 
@@ -64,7 +66,15 @@ export const LoginScreen = ({ navigation }: Props) => {
         value={password}
         onChangeText={setPassword}
       />
-      
+
+      {/*Campo de checkbox*/}      
+      <View style={globalStyles.checkBoxContainer}>
+        <Checkbox style={globalStyles.checkbox} value={remember} onValueChange={setRemember} color={ remember ? theme.colors.primary : undefined}/>
+        <TouchableOpacity>
+          <Text style={globalStyles.checkBoxLabel}>Lembrar-me</Text>
+        </TouchableOpacity>
+      </View>
+
       {loading ? (
         <ActivityIndicator size="large" color={theme.colors.primary} style={{ marginTop: 30 }} />
       ) : (
