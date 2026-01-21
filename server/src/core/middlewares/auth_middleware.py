@@ -11,7 +11,6 @@ logger = logging.getLogger(__name__)
 class AuthMiddleware(BaseHTTPMiddleware):
 
     PUBLIC_PATHS = [
-        "/",
         "/docs",
         "/redoc",
         "/openapi.json",
@@ -21,7 +20,7 @@ class AuthMiddleware(BaseHTTPMiddleware):
     ]
 
     async def dispatch(self, request:Request, call_next):
-        if any(request.url.path.startswith(path) for path in self.PUBLIC_PATHS):
+        if request.url.path == "/" or any(request.url.path.startswith(path) for path in self.PUBLIC_PATHS):
             response = await call_next(request)
             return response
         

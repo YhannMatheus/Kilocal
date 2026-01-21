@@ -1,40 +1,25 @@
-from pydantic import BaseModel, Field
-from datetime import datetime
-from uuid import UUID
-from typing import Optional, List
-from src.types.enums.exercise import ExerciseTypeEnum, IntensityLevelEnum, ExercisseNameEnum
-from src.types.schemas.set import SetRead
+from pydantic import BaseModel, UUID4
+from typing import Optional
+from src.types.enums.exercise import MuscleGroupEnum
 
-class ExerciseCreate(BaseModel):
-    workout_id: UUID
-    name: ExercisseNameEnum
-    type: ExerciseTypeEnum
-    intensity: IntensityLevelEnum
-
-class ExerciseUpdate(BaseModel):
-    name: Optional[ExercisseNameEnum] = None
-    type: Optional[ExerciseTypeEnum] = None
-    intensity: Optional[IntensityLevelEnum] = None
-
-class ExerciseMinimal(BaseModel):
-    id: UUID
+class ExerciseBase(BaseModel):
     name: str
-    type: str
-    intensity: str
-    calories_burned: float
+    target_muscle: MuscleGroupEnum
+
+class ExerciseSimpleSchema(ExerciseBase):
+    id: UUID4
     
     class Config:
         from_attributes = True
 
-class ExerciseRead(BaseModel):
-    id: UUID
-    workout_id: UUID
-    name: ExercisseNameEnum
-    type: ExerciseTypeEnum
-    intensity: IntensityLevelEnum
-    sets: Optional[List[SetRead]] = []
-    calories_burned: float
-    created_at: datetime
+class ExerciseCreate(ExerciseBase):
+    target_muscle: MuscleGroupEnum = MuscleGroupEnum.CHEST
+    instructions: Optional[str] = None
+
+class ExerciseResponseSchema(ExerciseCreate):
+    id: UUID4
+    is_system_default: bool
+    is_custom: bool 
 
     class Config:
         from_attributes = True

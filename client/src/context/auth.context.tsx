@@ -1,7 +1,9 @@
 import React, { createContext, useState, useEffect, ReactNode} from "react";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { api } from "@/services/api";
-import {AuthResponse, User} from '@/types';
+import { AuthService } from "@/services/auth.service";
+import { UserService } from "@/services/user.service";
+import { AuthResponse, User } from '@/types';
 
 interface AuthContextData{
     user: User | null;
@@ -23,22 +25,45 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
 
     async function localStorageData(){
         try{
-            const token = await AsyncStorage.getItem("@Kilocal:token");
+            // SWR: Carrega token e usuário cacheado em paralelo
+            const [token, userString] = await Promise.all([
+                AsyncStorage.getItem("@Kilocal:token"),
+                AsyncStorage.getItem("@Kilocal:user")
+            ]);
 
             if(token){
                 api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 
-                try{
-                    const response = await api.get<User>('/users/profile');
-                    setUser(response.data);
-                }catch(error){
-                    await signOut();
+                if (userString) {
+                    // Hidratação imediata
+                    setUser(JSON.parse(userString));
+                    setIsLoading(false);
+                    // Valida em background
+                    revalidateUser();
+                } else {
+                    // Sem cache, aguarda API
+                    await revalidateUser();
+                    setIsLoading(false);
                 }
+            } else {
+                setIsLoading(false);
             }
         }catch(error){
             console.log("LocalStorageData ERROR", error);
-        }finally{
             setIsLoading(false);
+        }
+    }
+
+    async function revalidateUser() {
+        try {
+            const userData = await UserService.getProfile();
+            setUser(userData);
+            await AsyncStorage.setItem("@Kilocal:user", JSON.stringify(userData));
+        } catch(error) {
+            console.log("Background revalidate failed", error);
+            if ((error as any).response?.status === 401) {
+                await signOut();
+            }
         }
     }
     
@@ -46,8 +71,10 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
         try{
             await AsyncStorage.setItem("@Kilocal:token", token);
             api.defaults.headers.common['Authorization'] = `Bearer ${token}`;
-            const userResponse = await api.get<User>('/users/profile');
-            setUser(userResponse.data);
+            
+            const userData = await UserService.getProfile();
+            setUser(userData);
+            await AsyncStorage.setItem("@Kilocal:user", JSON.stringify(userData));
         } catch(error){
             console.log("SignInWithToken ERROR", error);
             await signOut();
@@ -56,27 +83,21 @@ export const AuthProvider = ({children}: {children: ReactNode}) => {
     }
 
     async function signIn(email: string, pass: string, remember: boolean){
-        const response = await api.post<AuthResponse>('/user/login', {
-            email,
-            password: pass,
-            remember
-        })
-
-        const {access_token} = response.data;
+        const { access_token } = await AuthService.login(email, pass, remember);
         
         await AsyncStorage.setItem("@Kilocal:token", access_token);
         api.defaults.headers.common['Authorization'] = `Bearer ${access_token}`;
 
-        const userResponse = await api.get<User>('/users/profile');
-        setUser(userResponse.data);
+        const userData = await UserService.getProfile();
+        setUser(userData);
+        await AsyncStorage.setItem("@Kilocal:user", JSON.stringify(userData));
     }
+
     async function signOut(){
-        await AsyncStorage.removeItem("@Kilocal:token");
+        await AsyncStorage.multiRemove(["@Kilocal:token", "@Kilocal:user"]);
         setUser(null);
         delete api.defaults.headers.common['Authorization'];
     }
-
-    
 
     return(
         <AuthContext.Provider value={{user, isLoading, signIn, signInWithToken ,signOut}}>

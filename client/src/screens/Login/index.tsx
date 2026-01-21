@@ -83,11 +83,8 @@ export default function LoginScreen ({ navigation }: Props) {
         </TouchableOpacity>
       )}
       
-      <TouchableOpacity onPress={() => navigation.navigate('Register')}>
-        <Text style={globalStyles.linkText}>Esqueceu a senha?</Text>
-      </TouchableOpacity>
-      
-      {/* Botão temporário para ir ao registro */}
+      {/* Botão de Registro */}
+      {/* Corrigida duplicidade e link quebrado de 'Esqueceu a senha' */}
       <TouchableOpacity onPress={() => navigation.navigate('Register')}>
         <Text style={[globalStyles.linkText, { color: theme.colors.primary, marginTop: 10, textDecorationLine: 'none' }]}>
           Não tem conta? Cadastre-se

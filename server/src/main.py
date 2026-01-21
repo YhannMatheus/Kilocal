@@ -7,15 +7,12 @@ from src.core.config import settings
 from src.routes import user
 from src.routes import body_assessment
 from src.routes import workout
+from src.routes import caloric_intake
 
 app = FastAPI(
     title="KiloCal API",
     description="API para acompanhamento de treinos e cálculo de calorias",
     version="1.0.0",
-    root_path="/api/v1",
-    openapi_url="/api/v1/openapi.json",
-    docs_url="/api/v1/docs",
-    redoc_url="/api/v1/redoc",
 )
 
 app.add_middleware(
@@ -31,12 +28,10 @@ app.add_middleware(AuthMiddleware)
 
 database = configure_database(app)
 
-app.include_router(user.router)
-app.include_router(body_assessment.router)
-app.include_router(workout.router)
-#app.include_router(exercise.router)
-#app.include_router(set.router)
-#app.include_router(caloric_intake.router)
+app.include_router(user.router, prefix="/api/v1")
+app.include_router(body_assessment.router, prefix="/api/v1")
+app.include_router(workout.router, prefix="/api/v1")
+app.include_router(caloric_intake.router, prefix="/api/v1")
 
 
 @app.get("/")
@@ -51,5 +46,5 @@ def health_check():
 async def startup_event():
     base_url = "https://kilocal-8fy9.onrender.com" if settings.STAGE == "PROD" else "http://localhost:8000"
     print(f"\nAPI Rodando em modo: {settings.STAGE}")
-    print(f"Documentação: {base_url}/api/v1/docs\n")
+    print(f"Documentação: {base_url}/docs\n")
 

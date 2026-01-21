@@ -1,7 +1,7 @@
 """Enums centralizados do projeto KiloCal"""
 
 from .user import GenderEnum, ActivityLevelEnum, RoleEnum
-from .exercise import ExerciseTypeEnum, IntensityLevelEnum
+from .exercise import MuscleGroupEnum, IntensityLevelEnum
 from .workout import TrainingTypeEnum
 from .calculations import ResistanceTypeEnum, BodyFatFormulaEnum, BMRFormulaEnum
 
@@ -11,7 +11,7 @@ __all__ = [
     "ActivityLevelEnum",
     "RoleEnum",
     # Exercise enums
-    "ExerciseTypeEnum",
+    "MuscleGroupEnum",
     "IntensityLevelEnum",
     # Workout enums
     "TrainingTypeEnum",

@@ -34,9 +34,9 @@ class UserService:
         )
 
         return AccessToken.generate(str(user.id), user.role.value, remember=True)
-
+    
     @staticmethod
-    async def get_user(data: LoginRequest) -> str:
+    async def login(data: LoginRequest) -> str:
         user = await User.get_or_none(email=(data.email).lower())
         
         invalid_auth_exception = HTTPException(
@@ -61,31 +61,21 @@ class UserService:
 
     @staticmethod
     async def get_user_profile(user_id: str) -> UserProfile:
-
         user = await User.get_or_none(id=user_id)
-
         if not user:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND, detail="User not found"
-            )
+            raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="User not found")
+        
+        workouts_query = Workout.filter(user_id=user.id).prefetch_related("sets__exercise")
         
         workouts, body_history = await asyncio.gather(
-            Workout.filter(user_id=user.id).all(),
+            workouts_query.all(),
             BodyAssessmentService.get_body_assessment_graphs(str(user.id))
         )
         
-        workout_list = [WorkoutRead.from_orm(w) for w in workouts]
+        workout_list = [WorkoutRead.model_validate(w) for w in workouts]
         
         return UserProfile(
-            userData=UserRead(
-                id=user.id,
-                email=user.email,
-                name=user.name,
-                birth_date=user.birth_date,
-                height_cm=user.height_cm,
-                gender=user.gender,
-                activity_level=user.activity_level
-            ),
+            userData=UserRead.model_validate(user), # Ajuste aqui também se necessário
             workouts=workout_list,
             body_graphs=body_history
         )

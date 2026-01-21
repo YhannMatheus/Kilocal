@@ -16,7 +16,7 @@ class ActivityLevelEnum(str, Enum):
     MODERATELY_ACTIVE = "moderately_active"
     VERY_ACTIVE = "very_active"
     EXTRA_ACTIVE = "extra_active"
-    ATHLETE = "athlete"  # Para cálculos de gasto energético
+    ATHLETE = "athlete"
 
 
 class RoleEnum(str, Enum):

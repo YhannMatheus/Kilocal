@@ -1,40 +1,46 @@
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, UUID4
 from datetime import datetime
-from uuid import UUID
 from typing import Optional, List
 from src.types.enums.workout import TrainingTypeEnum
-from src.types.schemas.exercise import ExerciseRead, ExerciseMinimal
+from src.types.schemas.set import SetRead, SetCreate
+
+# --- Schemas de Input ---
 
 class WorkoutCreate(BaseModel):
-    userid : UUID
+    user_id: UUID4
     name: str = Field(..., min_length=1, max_length=255)
     type: TrainingTypeEnum
     start_time: datetime
+    sets: List[SetCreate] = []
+
+class WorkoutUpdate(BaseModel):
+    name: Optional[str] = Field(None, min_length=1, max_length=255)
+    type: Optional[TrainingTypeEnum] = None
+    end_time: Optional[datetime] = None
+
+# --- Schemas de Output ---
 
 class WorkoutRead(BaseModel):
+    id: UUID4
     name: str
     type: TrainingTypeEnum
     start_time: datetime
     total_calories_burned: float = 0.0
     duration_minutes: Optional[float] = None
-    exercises: List[ExerciseMinimal] = []
+    # Alterado de exercises -> sets
+    sets: List[SetRead] = [] 
+    
     class Config:
         from_attributes = True
-class WorkoutDetailed(BaseModel):
-    id: UUID
-    user_id: UUID
-    name: str
-    type: TrainingTypeEnum
-    start_time: datetime
+
+class WorkoutDetailed(WorkoutRead):
+    user_id: UUID4
     end_time: Optional[datetime] = None
-    total_calories_burned: float = 0.0
-    duration_minutes: Optional[float] = None
-    exercises: List[ExerciseRead] = []
     create_at: datetime
 
     class Config:
         from_attributes = True
-        
+
 class WorkoutCaloriesGraphPoint(BaseModel):
     date: datetime
     total_calories: float
@@ -54,8 +60,3 @@ class WorkoutGraphs(BaseModel):
     calories_graph: List[WorkoutCaloriesGraphPoint] = []
     duration_graph: List[WorkoutDurationGraphPoint] = []
     performance_by_type_graph: List[WorkoutPerformanceByTypeGraphPoint] = []
-
-class WorkoutUpdate(BaseModel):
-    name: Optional[str] = Field(None, min_length=1, max_length=255)
-    type: Optional[TrainingTypeEnum] = None
-    end_time: Optional[datetime] = None

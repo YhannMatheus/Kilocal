@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from typing import Optional
 from uuid import UUID
 from datetime import date
-from src.types.enums.user import RoleEnum, GenderEnum, ActivityLevelEnum
+from src.types.enums.user import RoleEnum, GenderEnum
 
 class Token(BaseModel):
     access_token: str

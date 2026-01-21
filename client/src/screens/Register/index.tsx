@@ -22,7 +22,7 @@ export default function RegisterScreen({ navigation }: Props) {
     password: '',
     confirmPassword: '',
     dayOfBirth: '',
-    mouthOfBirth: '',
+    monthOfBirth: '',
     yearOfBirth: '',
     height: 0, // Inicia como 0
     gender: "male",
@@ -53,8 +53,8 @@ export default function RegisterScreen({ navigation }: Props) {
     const day = parseInt(forms.dayOfBirth);
     if (isNaN(day) || day < 1 || day > 31) newErrors.dayOfBirth = "Dia inválido.";
     
-    const mouth = parseInt(forms.mouthOfBirth);
-    if (isNaN(mouth) || mouth < 1 || mouth > 12) newErrors.mouthOfBirth = "Mês inválido.";
+    const month = parseInt(forms.monthOfBirth);
+    if (isNaN(month) || month < 1 || month > 12) newErrors.monthOfBirth = "Mês inválido.";
     
     const year = parseInt(forms.yearOfBirth);
     const currentYear = new Date().getFullYear();
@@ -77,7 +77,7 @@ export default function RegisterScreen({ navigation }: Props) {
         name: forms.name,
         email: forms.email,
         password: forms.password,
-        birth_date: `${forms.yearOfBirth}-${forms.mouthOfBirth.padStart(2,'0')}-${forms.dayOfBirth.padStart(2,'0')}`,
+        birth_date: `${forms.yearOfBirth}-${forms.monthOfBirth.padStart(2,'0')}-${forms.dayOfBirth.padStart(2,'0')}`,
         height_cm: forms.height,
         gender: forms.gender,
         activity_level: 'moderate' 
@@ -95,9 +95,11 @@ export default function RegisterScreen({ navigation }: Props) {
       }
 
     } catch (error: any) {
-      console.log("Erro Registro: ", error.response?.data); 
-      // Tenta pegar a mensagem de erro detalhada do backend
-      const msg = error.response?.data?.detail || 'Erro ao registrar. Tente novamente.';
+      console.log("Erro Registro Completo:", error);
+      console.log("Erro Message:", error.message);
+      console.log("Erik Response:", error.response);
+      
+      const msg = error.response?.data?.detail || error.message || 'Erro ao registrar.';
       alert(msg);
 
     } finally {
@@ -157,11 +159,11 @@ export default function RegisterScreen({ navigation }: Props) {
           {/* MÊS */}
           <View style={{ width: '30%' }}>
              <TextInput
-              style={[globalStyles.input, errors.mouthOfBirth && styles.inputError, {textAlign: 'center'}]}
+              style={[globalStyles.input, errors.monthOfBirth && styles.inputError, {textAlign: 'center'}]}
               placeholder="MM"
               placeholderTextColor={theme.colors.textLight}
-              value={forms.mouthOfBirth}
-              onChangeText={(t) => handleInputChange('mouthOfBirth', t)}
+              value={forms.monthOfBirth}
+              onChangeText={(t) => handleInputChange('monthOfBirth', t)}
               keyboardType="numeric"
               maxLength={2}
             />
@@ -180,7 +182,7 @@ export default function RegisterScreen({ navigation }: Props) {
           </View>
         </View>
         {/* Mostra erro se houver em qualquer um dos campos */}
-        {(errors.dayOfBirth || errors.mouthOfBirth || errors.yearOfBirth) && (
+        {(errors.dayOfBirth || errors.monthOfBirth || errors.yearOfBirth) && (
           <Text style={styles.errorText}>Data inválida (Verifique dia, mês e ano)</Text>
         )}
 

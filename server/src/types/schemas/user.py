@@ -2,7 +2,7 @@ from pydantic import BaseModel, EmailStr, Field
 from datetime import date
 from typing import Optional, List
 from uuid import UUID
-from src.types.enums.user import GenderEnum, ActivityLevelEnum, RoleEnum
+from src.types.enums.user import GenderEnum
 from src.types.schemas.workout import WorkoutRead
 from src.types.schemas.body_assessment import BodyAssessmentGraphs
 
@@ -11,10 +11,8 @@ class UserRead(BaseModel):
     email: EmailStr
     name: str
     birth_date: date
-    height_cm: float = Field(..., gt=0, lt=300, description="Altura em cm")
+    height_cm: Optional[float] = Field(None, gt=0, lt=300, description="Altura em cm") 
     gender: GenderEnum
-    activity_level: ActivityLevelEnum
-    
     class Config:
         from_attributes = True
 

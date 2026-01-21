@@ -65,12 +65,12 @@ class GraphPoint(BaseModel):
     value:  float
 
 class BodyAssessmentGraphs(BaseModel):
-    bfp_graph: list[GraphPoint]
-    bmi_graph: list[GraphPoint]
-    tdee_graph: list[GraphPoint]
-    lean_mass_graph: list[GraphPoint]
-    fat_mass_graph: list[GraphPoint]
-    weight_graph: list[GraphPoint]
+    bfp_graph: Optional[list[GraphPoint]] = []
+    bmi_graph: Optional[list[GraphPoint]] = []
+    tdee_graph: Optional[list[GraphPoint]] = []
+    lean_mass_graph: Optional[list[GraphPoint]] = []
+    fat_mass_graph: Optional[list[GraphPoint]] = []
+    weight_graph: Optional[list[GraphPoint]] = []
 
 class BioStatusType(str, Enum):
     WEIGTH = "weight"

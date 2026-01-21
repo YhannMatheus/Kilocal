@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, status, Header
+from fastapi import APIRouter, Depends, HTTPException, status, Header, Request
 from src.services.user_services import UserService
 from src.types.schemas.auth import *
 from src.types.schemas.user import *
@@ -11,7 +11,7 @@ router = APIRouter(prefix="/user", tags=["User"])
 @router.post("/login", response_model=Token)
 async def login(data: LoginRequest) -> Token:
     try:
-        access_token = await UserService.get_user(data)
+        access_token = await UserService.login(data)
                 
         token_data = AccessToken.decode(access_token)
         
@@ -62,13 +62,19 @@ async def register(data: RegisterRequest) -> Token:
         )
 
 @router.get("/profile", response_model=UserProfile)
-async def profile(authorization:str = Header(...)) -> UserProfile:
-    token = AccessToken.decode(authorization)
+async def profile(request: Request) -> UserProfile:
+    # Verifica se o Middleware de Auth populou o usuário
+    if not hasattr(request.state, "user") or not request.state.user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="User not authenticated or session invalid"
+        )
+
     try:
-        user_id = token.user_id
-        profile = await UserService.get_user_profile(str(user_id))
-        return profile
+        user = request.state.user 
         
+        profile_data = await UserService.get_user_profile(str(user.id))
+        return profile_data
     except HTTPException as e:
         raise e
     except Exception as e:

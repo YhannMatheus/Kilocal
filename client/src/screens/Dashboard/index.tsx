@@ -1,20 +1,12 @@
-import React, { useContext } from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import React, {useState, useEffect, useContext} from "react";
+import { NativeStackScreenProps } from '@react-navigation/native-stack';
+import { RootStackParamList } from '@/types';
 import { AuthContext } from '@/context/auth.context';
-import { globalStyles } from '@/styles/global';
 
-export default function DashboardScreen() {
-  const { user, signOut } = useContext(AuthContext);
+type Props = NativeStackScreenProps<RootStackParamList, 'Dashboard'>;
 
-  return (
-    <View style={globalStyles.container}>
-      <Text style={[globalStyles.title, { color: '#FFF' }]}>Dashboard</Text>
-      
-      <Text style={{ color: '#FFF', textAlign: 'center', marginBottom: 20 }}>
-        Bem-vindo, {user?.name || 'Atleta'}!
-      </Text>
+export default function DashboardScreen({navigation}: Props) {
+    const { user, signOut } = useContext(AuthContext);
+    const [loading, setLoading] = useState(false);
 
-      <Button title="Sair (Logout)" onPress={signOut} color="red" />
-    </View>
-  );
 }

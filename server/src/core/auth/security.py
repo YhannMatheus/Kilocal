@@ -1,25 +1,17 @@
 from passlib.context import CryptContext
 from fastapi.security import OAuth2PasswordBearer
-
+import bcrypt
 
 class Authenticate:
-    _context = CryptContext(schemes=["bcrypt"], deprecated="auto")
-    _oauth2_scheme = OAuth2PasswordBearer(tokenUrl="/auth/login")
-
-    @classmethod
-    def hash_password(cls, raw: str) -> str:
-        """Hash a password using bcrypt"""
-        # Bcrypt tem limite de 72 bytes - truncar antes de processar
-        password_bytes = raw.encode("utf-8")[:72]
-        # Recodificar de volta para string de forma segura
-        safe_password = password_bytes.decode("utf-8", errors="ignore")
-        return cls._context.hash(safe_password)
-
-    @classmethod
-    def verify_password(cls, raw: str, hashed: str) -> bool:
-        """Verify a password against a hash"""
-        # Bcrypt tem limite de 72 bytes - truncar antes de processar
-        password_bytes = raw.encode("utf-8")[:72]
-        # Recodificar de volta para string de forma segura
-        safe_password = password_bytes.decode("utf-8", errors="ignore")
-        return cls._context.verify(safe_password, hashed)
+    @staticmethod
+    def hash_password( password: str) -> str:
+        pwd_bytes = password.encode('utf-8')
+        salt = bcrypt.gensalt()
+        hashed = bcrypt.hashpw(pwd_bytes, salt)
+        return hashed.decode('utf-8')
+    @staticmethod
+    def verify_password(password: str, hashed_password: str) -> bool:
+        return bcrypt.checkpw(
+            password.encode('utf-8'), 
+            hashed_password.encode('utf-8')
+        )

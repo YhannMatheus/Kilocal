@@ -4,7 +4,7 @@ export interface RegisterForms{
     password: string;
     confirmPassword: string;
     dayOfBirth: string;
-    mouthOfBirth: string;
+    monthOfBirth: string;
     yearOfBirth: string;
     height: number;
     gender: "male" | "female";
@@ -16,7 +16,7 @@ export interface RegisterErrors{
     password?: string;
     confirmPassword?: string;
     dayOfBirth?: string;
-    mouthOfBirth?: string;
+    monthOfBirth?: string;
     yearOfBirth?: string;
     height?: string;
     gender?: string;

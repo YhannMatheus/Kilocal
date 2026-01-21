@@ -4,7 +4,7 @@ from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
     from tortoise.fields import ReverseRelation
-    from src.types.models.exercise import Exercisse
+    from src.types.models.sets import Set
 
 class Workout(Model):
     id = fields.UUIDField(pk=True)
@@ -19,7 +19,7 @@ class Workout(Model):
     create_at = fields.DatetimeField(auto_now_add=True)
 
     if TYPE_CHECKING:
-        exercises: ReverseRelation["Exercisse"]
+        sets: ReverseRelation["Set"]
 
     class Meta:
         table = "workouts"

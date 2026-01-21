@@ -11,5 +11,5 @@
   "include": [
     "**/*.ts",
     "**/*.tsx"
-, "src/screens/dashboard.screen.tsx3"  ]
+  ]
 }

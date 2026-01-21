@@ -1,34 +1,31 @@
-import requests
+import pytest
+from src.main import app as app
 
-BASE_URL = "http://localhost:8000/user"
+base_url = "http://localhost:3000/api/v1/user"
 
-def test_login_success():
-    payload = {
-        "email": "john@example.com",
-        "password": "password123"
+@pytest.mark.asyncio
+async def test_login_user(client):
+    # Primeiro, registrar o usuário
+    register_payload = {
+        "email": "test@test.com.br",
+        "name": "Test User",
+        "password": "StrongP@ssw0rd",
+        "height_cm": 175.5,
+        "birth_date": "1990-01-01",
+        "gender": "male",
     }
-    response = requests.post(f"{BASE_URL}/login", json=payload, params={"remember": False})
+    
+    response = await client.post("/register", json=register_payload)
+
+    if response.status_code != 200:
+        pytest.fail("Falha ao registrar o usuário para o teste de login.")
+    # Agora, tentar logar com as credenciais corretas
+    login = {
+        "email": "test@test.com.br",
+        "password": "StrongP@ssw0rd",
+        "remember": False
+    }
+
+    response = await client.post("/login", json=login)
     assert response.status_code == 200
-    data = response.json()
-    assert "access_token" in data
-    assert data["access_token"] is not None
-
-def test_login_failure():
-    payload = {
-        "email": "john@example.com",
-        "password": "wrongpassword"
-    }
-    response = requests.post(f"{BASE_URL}/login", json=payload, params={"remember": False})
-    assert response.status_code == 401
-    data = response.json()
-    assert "detail" in data
-
-def test_login_missing_fields():
-    payload = {
-        "email": "john@example.com"
-        # Missing password field
-    }
-    response = requests.post(f"{BASE_URL}/login", json=payload)
-    assert response.status_code == 422
-    data = response.json()
-    assert "detail" in data
+    

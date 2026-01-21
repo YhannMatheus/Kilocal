@@ -1,10 +1,14 @@
 import axios from "axios";
+import { API_CONFIG } from "@/config/api.config";
 
 export const api = axios.create({
-    baseURL: 'https://kilocal-8fy9.onrender.com/api/v1',
+    baseURL: API_CONFIG.BASE_URL,
+    timeout: API_CONFIG.TIMEOUT,
 })
 
-api.interceptors.request.use(
+console.log(">>> API CONFIGURADA COM BASE_URL:", API_CONFIG.BASE_URL);
+
+api.interceptors.response.use(
     response => response, (error) => {
         if (error.response){
             console.log('API ERROR', error.response.data);
