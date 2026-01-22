@@ -1,6 +1,6 @@
-import LoginScreen from "./Login";
-import RegisterScreen from "./Register";
-import DashboardScreen from "./Dashboard";
+import LoginScreen from "./auth/Login";
+import RegisterScreen from "./auth/Register";
+import DashboardScreen from "./app/Dashboard";
 
 export {  
   LoginScreen,

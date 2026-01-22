@@ -4,26 +4,39 @@ import { LineChart, ProgressChart } from "react-native-chart-kit";
 import { theme } from "@/styles/theme";
 
 // Tipagem correta dos tipos
-type ChartType = "line" | "progress";
+export type ChartType = "line" | "progress";
 
-interface ChartProps {
+export interface ChartProps {
   title: string;
-  type: ChartType;
+  type?: ChartType;
   data: number[];
   labels?: string[];
   height?: number;
+  width?: number;
   unity?: string;
+  value?: string;
+  color?: string;
 }
 
-// Estilos mantidos
 const styles = StyleSheet.create({
   container: { marginBottom: 20 },
+  headerRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'baseline',
+    paddingRight: 10,
+    marginBottom: 5
+  },
   title: {
     color: '#FFF',
     fontSize: 18,
     fontWeight: 'bold',
-    marginBottom: 10,
     marginLeft: 5
+  },
+  value: {
+     color: theme.colors.primary,
+     fontSize: 16,
+     fontWeight: 'bold'
   },
   chartStyle: { marginVertical: 8, borderRadius: 16 },
   progressContainer: {
@@ -48,19 +61,24 @@ const styles = StyleSheet.create({
 
 export const Graph = ({
   title,
-  type,
+  type = "line",
   data,
   labels = [],
   height = 220,
-  unity = ""
+  width, // Added width
+  unity = "",
+  value,
+  color
 }: ChartProps) => {
   const screenWidth = Dimensions.get("window").width;
+  const chartWidth = width || screenWidth - 40; // Use prop or default
+
   const isEmpty = !data || data.length === 0;
 
   const chartConfig = {
     backgroundGradientFrom: theme.colors.card,
     backgroundGradientTo: theme.colors.card,
-    color: (opacity = 1) => `rgba(255, 255, 255, ${opacity})`,
+    color: (opacity = 1) => color ? color : `rgba(255, 255, 255, ${opacity})`,
     strokeWidth: 2,
     barPercentage: 0.5,
     decimalPlaces: 2,
@@ -68,7 +86,7 @@ export const Graph = ({
     propsForDots: { 
       r: "4",
       strokeWidth: "2",
-      stroke: "#fff"
+      stroke: color || "#fff"
     }
   };
 
@@ -78,14 +96,17 @@ export const Graph = ({
     
     return (
       <View style={styles.container}>
-        <Text style={styles.title}>{title} {unity ? `(${unity})` : ''}</Text>
+        <View style={styles.headerRow}>
+            <Text style={styles.title}>{title} {unity ? `(${unity})` : ''}</Text>
+            {value && <Text style={[styles.value, color ? {color} : {}]}>{value}</Text>}
+        </View>
         <View>
             <LineChart
             data={{
                 labels: displayLabels,
                 datasets: [{ data: displayData }]
             }}
-            width={screenWidth - 40}
+            width={chartWidth}
             height={height}
             chartConfig={chartConfig}
             style={styles.chartStyle}
@@ -113,7 +134,7 @@ export const Graph = ({
               labels: displayLabels, 
               data: displayData 
             }}
-            width={screenWidth - 40}
+            width={chartWidth}
             height={height}
             strokeWidth={16}
             radius={32}

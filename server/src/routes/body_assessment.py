@@ -70,7 +70,7 @@ async def get_weight_graph_data(search_type:BioStatusType, request:Request) -> l
                 graph_data = await BodyAssessmentService.bfp_for_date(token_user_id)
             case BioStatusType.TDEE:
                 graph_data = await BodyAssessmentService.tdee_for_date(token_user_id)
-            case BioStatusType.WEIGTH:
+            case BioStatusType.WEIGHT:
                 graph_data = await BodyAssessmentService.weight_for_date(token_user_id)
             case BioStatusType.BMI:
                 graph_data = await BodyAssessmentService.bmi_for_date(token_user_id)

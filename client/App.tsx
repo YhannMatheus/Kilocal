@@ -1,68 +1,48 @@
-import React, { useContext } from 'react';
-import { ActivityIndicator, View, StatusBar } from 'react-native';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
+import React, { useCallback } from 'react';
+import { StatusBar, View, ActivityIndicator } from 'react-native';
+import { AuthProvider } from '@/context/auth.context';
+import { Routes } from '@/routes';
+import { theme } from '@/styles/theme';
 
-// Contextos e Tipos
-import { AuthProvider, AuthContext } from '@/context/auth.context';
-import { RootStackParamList } from './src/types';
-import { theme } from './src/styles/theme'; // Importe o tema para usar as cores
-
+// 1. Importar as fontes que você quer usar
 import { 
-  LoginScreen,
-  RegisterScreen,
-  DashboardScreen } from '@/screens';
+  useFonts, 
+  Inter_400Regular, 
+  Inter_600SemiBold, 
+  Inter_700Bold 
+} from '@expo-google-fonts/inter';
+import * as SplashScreen from 'expo-splash-screen';
 
-const Stack = createNativeStackNavigator<RootStackParamList>();
-
-function Routes() {
-  const { user, isLoading } = useContext(AuthContext);
-
-  // 1. TELA DE CARREGAMENTO (SPLASH)
-  if (isLoading) {
-    return (
-      <View style={{ 
-        flex: 1, 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        backgroundColor: theme.colors.background // Fundo Preto
-      }}>
-        <ActivityIndicator size="large" color={theme.colors.primary} />
-      </View>
-    );
-  }
-
-  // 2. NAVEGAÇÃO PRINCIPAL
-  return (
-    <NavigationContainer>
-      {/* StatusBar estilo 'light' para o texto (hora, bateria) ficar branco no fundo preto */}
-      <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
-      
-      <Stack.Navigator 
-        screenOptions={{ 
-          headerShown: false, // Oculta o cabeçalho padrão em TODAS as telas
-          contentStyle: { backgroundColor: theme.colors.background } // Garante fundo preto na transição
-        }}
-      >
-        {user ? (
-          // === FLUXO LOGADO ===
-          <Stack.Screen name="Dashboard" component={DashboardScreen} />
-        ) : (
-          // === FLUXO GUEST (LOGIN/REGISTER) ===
-          <>
-            <Stack.Screen name="Login" component={LoginScreen} />
-            <Stack.Screen name="Register" component={RegisterScreen} />
-          </>
-        )}
-      </Stack.Navigator>
-    </NavigationContainer>
-  );
-}
+// (Opcional) Impede a Splash Screen de sumir até carregarmos tudo
+SplashScreen.preventAutoHideAsync();
 
 export default function App() {
+  // 2. Carregar as fontes na memória
+  const [fontsLoaded] = useFonts({
+    Inter_400Regular,
+    Inter_600SemiBold,
+    Inter_700Bold,
+  });
+
+  // 3. Callback para esconder a Splash Screen quando a fonte carregar
+  const onLayoutRootView = useCallback(async () => {
+    if (fontsLoaded) {
+      await SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded]);
+
+  // Se a fonte não carregou, não mostra nada (ou retorna null)
+  if (!fontsLoaded) {
+    return null; 
+  }
+
+  // 4. Aplica o onLayout na View principal
   return (
-    <AuthProvider>
-      <Routes />
-    </AuthProvider>
+    <View style={{ flex: 1 }} onLayout={onLayoutRootView}>
+      <AuthProvider>
+        <StatusBar barStyle="light-content" backgroundColor={theme.colors.background} />
+        <Routes />
+      </AuthProvider>
+    </View>
   );
 }

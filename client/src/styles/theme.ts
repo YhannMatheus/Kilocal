@@ -9,6 +9,7 @@ export const colors = {
   textHighlight: '#0056D2',// Azul para os labels (E-MAIL, SENHA)
   error: '#FF453A',
   success: '#32D74B',
+  primary_opacity: 'rgba(0, 86, 210, 0.2)',
 };
 
 export const fontSizes = {
@@ -25,8 +26,16 @@ export const spacing = {
   xlarge: 40, // Espaçamento maior para o topo
 };
 
+  // ADICIONE ISSO AQUI:
+export const fonts = {
+  regular: 'Inter_400Regular', // Texto comum
+  medium: 'Inter_600SemiBold', // Subtítulos ou botões
+  bold: 'Inter_700Bold',       // Títulos grandes
+}
+
 export const theme = {
   colors,
   fontSizes,
   spacing,
+  fonts,
 };

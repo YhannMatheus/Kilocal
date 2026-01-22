@@ -73,7 +73,7 @@ class BodyAssessmentGraphs(BaseModel):
     weight_graph: Optional[list[GraphPoint]] = []
 
 class BioStatusType(str, Enum):
-    WEIGTH = "weight"
+    WEIGHT = "weight"
     BFP = "bfp"
     BMI = "bmi"
     BMR = "bmr"

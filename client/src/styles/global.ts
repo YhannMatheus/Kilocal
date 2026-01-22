@@ -112,6 +112,17 @@ export const globalStyles = StyleSheet.create({
   checkBoxLabel:{
     color: theme.colors.text,
     fontSize: theme.fontSizes.medium,
-  }
+  },
+  greeting: {
+    fontSize: 14,
+    color: theme.colors.textLight,
+    fontFamily: theme.fonts.regular, // <--- Agora isso existe e carrega a Inter!
+},
+userName: {
+    fontSize: 24,
+    color: theme.colors.text,
+    fontFamily: theme.fonts.bold, // <--- Fica em negrito bonito
+},
+
 
 });
